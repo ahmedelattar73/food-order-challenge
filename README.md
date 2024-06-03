@@ -67,4 +67,19 @@ To run tests, use the following command:
 
 ```bash
 ./vendor/bin/sail test
+```
 
+### Request Details
+
+To place an order, send a POST request to the `/api/placeorder` endpoint with the following JSON payload:
+
+```json
+{
+    "products": [
+        {
+            "product_id": 1,
+            "quantity": 2
+        }
+    ]
+}
+```

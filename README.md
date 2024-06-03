@@ -29,32 +29,42 @@ To install and run this project, follow these steps:
     ```bash
     cp .env.example .env
     ```
+5. Update `.env` with database credentials:
 
-5. Generate an application key:
+    ```bash
+    DB_CONNECTION=mysql
+    DB_HOST=mysql
+    DB_PORT=3306
+    DB_DATABASE=laravel
+    DB_USERNAME=sail
+    DB_PASSWORD=password
+    ```
+
+6. Generate an application key:
 
     ```bash
     php artisan key:generate
     ```
 
-6. Start Laravel Sail Docker environment:
+7. Start Laravel Sail Docker environment:
 
     ```bash
     ./vendor/bin/sail up -d
     ```
 
-7. Run database migrations:
+8. Run database migrations:
 
     ```bash
     ./vendor/bin/sail artisan migrate
     ```
 
-8. Seed the database with sample data:
+9. Seed the database with sample data:
 
     ```bash
     ./vendor/bin/sail artisan db:seed
     ```
 
-9. Run queue worker:
+10. Run queue worker:
 
     ```bash
     ./vendor/bin/sail artisan queue:work

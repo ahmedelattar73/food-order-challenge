@@ -1,75 +1,55 @@
-version: '3'
 services:
-
-    php:
+    laravel.test:
         build:
+            context: ./vendor/laravel/sail/runtimes/8.3
+            dockerfile: Dockerfile
             args:
-                user: admin
-                uid: 1000
-            context: .
-            dockerfile: ./docker/Dockerfile
-        volumes:
-            - ./:/var/www/
-            - $HOME/.composer/:$HOME/.composer/
-        environment:
-            - "DB_HOST=mysql"
-            - "DB_DATABASE=food_order"
-            - "DB_USERNAME=admin"
-            - "DB_PASSWORD=password"
-            - "REDIS_HOST=redis"
-            - "REDIS_PORT=6379"
-        networks:
-            - service-network
-
-    nginx:
-        image: nginx:alpine
-        container_name: web-server
-        restart: unless-stopped
-        tty: true
+                WWWGROUP: '${WWWGROUP}'
+        image: sail-8.3/app
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
         ports:
-            - "8000:80"
+            - '${APP_PORT:-80}:80'
+            - '${VITE_PORT:-5173}:${VITE_PORT:-5173}'
+        environment:
+            WWWUSER: '${WWWUSER}'
+            LARAVEL_SAIL: 1
+            XDEBUG_MODE: '${SAIL_XDEBUG_MODE:-off}'
+            XDEBUG_CONFIG: '${SAIL_XDEBUG_CONFIG:-client_host=host.docker.internal}'
+            IGNITION_LOCAL_SITES_PATH: '${PWD}'
         volumes:
-            - ./:/var/www
-            - ./docker/nginx/conf.d:/etc/nginx/conf.d/
+            - '.:/var/www/html'
         networks:
-            - service-network
-
+            - sail
+        depends_on:
+            - mysql
     mysql:
-        image: mariadb:10.5.8
-        volumes:
-            - mysqldata:/var/lib/mysql
+        image: 'mysql/mysql-server:8.0'
+        ports:
+            - '${FORWARD_DB_PORT:-3306}:3306'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
             MYSQL_DATABASE: '${DB_DATABASE}'
             MYSQL_USER: '${DB_USERNAME}'
             MYSQL_PASSWORD: '${DB_PASSWORD}'
-        ports:
-            - "3306:3306"
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'sail-mysql:/var/lib/mysql'
+            - './vendor/laravel/sail/database/mysql/create-testing-database.sh:/docker-entrypoint-initdb.d/10-create-testing-database.sh'
         networks:
-            - service-network
-
-    phpmyadmin:
-        image: phpmyadmin
-        restart: always
-        ports:
-            - 8001:80
-        environment:
-            - PMA_ARBITRARY=1
-            - PMA_HOST=mysql
-        networks:
-            - service-network
-    redis:
-        image: redis:4.0-alpine
-        command: redis-server --appendonly yes
-        ports:
-            - "6379:6379"
-        networks:
-            - service-network
-
-volumes:
-    mysqldata:
-
+            - sail
+        healthcheck:
+            test:
+                - CMD
+                - mysqladmin
+                - ping
+                - '-p${DB_PASSWORD}'
+            retries: 3
+            timeout: 5s
 networks:
-    service-network:
+    sail:
         driver: bridge
+volumes:
+    sail-mysql:
+        driver: local

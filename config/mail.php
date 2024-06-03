@@ -113,4 +113,5 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'merchant_email' => 'ahmedelattar73@gmail.com',
 ];

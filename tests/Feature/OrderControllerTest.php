@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Events\OrderPlaced;
 use App\Events\StockUpdated;
+use App\Exceptions\OutOfStockIngredient;
 use App\Listeners\LowStockNotification;
 use App\Listeners\UpdateStock;
 use App\Mail\LowStockAlert;
@@ -11,6 +12,7 @@ use App\Models\Ingredient;
 use Database\Seeders\ProductSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Exceptions;
 use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 class OrderControllerTest extends TestCase
@@ -152,6 +154,8 @@ class OrderControllerTest extends TestCase
      */
     public function test_fails_to_place_order_due_to_insufficient_stock(): void
     {
+        Exceptions::fake();
+
         $ingredient = Ingredient::whereName('Beef')->first();
         $ingredient->update(['available' => 100]); // Set available stock to less than required
 
@@ -161,10 +165,9 @@ class OrderControllerTest extends TestCase
             ]
         ]);
 
-        $response->assertStatus(400)
-            ->assertJson([
-                'message' => __('Ingredient :ingredient is out of stock.', ['ingredient' => $ingredient->name]),
-            ]);
+        Exceptions::assertReported(function (OutOfStockIngredient $e) use($ingredient) {
+            return $e->getMessage() === __('Ingredient :ingredient is out of stock.', ['ingredient' => $ingredient->name]);
+        });
 
         $this->assertDatabaseMissing('orders', ['id' => $response->json('data.id')]);
     }

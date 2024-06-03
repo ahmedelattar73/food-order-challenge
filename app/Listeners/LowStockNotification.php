@@ -7,9 +7,12 @@ use App\Mail\LowStockAlert;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class LowStockNotification
+class LowStockNotification implements ShouldQueue, ShouldHandleEventsAfterCommit
 {
+    use InteractsWithQueue;
+
     /**
      * Handle the event.
      *

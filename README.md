@@ -9,7 +9,7 @@ To install and run this project, follow these steps:
 1. Clone the repository to your local machine:
 
     ```bash
-    git clone https://github.com/ahmedelattar73/food-order-challenge.git
+    git clone git@github.com:ahmedelattar73/food-order-challenge.git
     ```
 
 2. Navigate to the project directory:

@@ -50,7 +50,7 @@ services:
 
     nginx:
         image: nginx:alpine
-        container_name: travellist-nginx
+        container_name: nginx
         restart: unless-stopped
         ports:
             - 8000:80

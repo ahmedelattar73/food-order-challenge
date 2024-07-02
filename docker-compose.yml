@@ -43,7 +43,8 @@ services:
             MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
-            - ./var/db-data:/var/lib/mysql
+            - mysqldb:/var/lib/mysql
+#            - ./var/db-data:/var/lib/mysql
             - ./docker/mysql:/docker-entrypoint-initdb.d
         networks:
             - local
@@ -76,3 +77,6 @@ services:
 networks:
     local:
         driver: bridge
+
+volumes:
+    mysqldb:

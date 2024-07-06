@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use PDPhilip\Elasticsearch\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
     use HasFactory;
+
+    protected $connection = 'elasticsearch';
+    protected $index = 'my_products';
 
     protected $fillable = ['name'];
 

@@ -5,13 +5,19 @@ namespace App\Http\Controllers;
 use App\Exceptions\OutOfStockIngredient;
 use App\Http\Requests\PlaceOrderRequest;
 use App\Http\Resources\OrderResource;
+use App\Models\Product;
 use App\Services\Order\PlaceOrderServiceInterface;
+use Elastic\Elasticsearch\Client;
+use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
 {
+    /** @var \Elasticsearch\Client */
+    private $elasticsearch;
+
     /**
      * @var PlaceOrderServiceInterface
      */
@@ -25,6 +31,7 @@ class OrderController extends Controller
     public function __construct(PlaceOrderServiceInterface $placeOrderService)
     {
         $this->placeOrderService = $placeOrderService;
+
     }
 
     /**
@@ -36,6 +43,11 @@ class OrderController extends Controller
      */
     public function placeOrder(PlaceOrderRequest $request): JsonResponse
     {
+
+        $product = Product::where('color', 'green')->first();
+
+        return $product->getMeta();
+
         $order = $this->placeOrderService->placeOrder($request->input('products'));
 
         return (new OrderResource($order))

@@ -84,6 +84,24 @@ services:
         volumes:
             - cache:/data
 
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.15.2
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+            memlock:
+                soft: -1
+                hard: -1
+        ports:
+            - 9200:9200
+            - 9300:9300
+        volumes:
+            - elasticsearch:/usr/share/elasticsearch/data
+        networks:
+            - local
+
 networks:
     local:
         driver: bridge
@@ -91,4 +109,6 @@ networks:
 volumes:
     mysqldb:
     cache:
+        driver: local
+    elasticsearch:
         driver: local

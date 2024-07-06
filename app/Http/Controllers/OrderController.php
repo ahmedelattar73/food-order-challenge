@@ -7,6 +7,7 @@ use App\Http\Requests\PlaceOrderRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\Order\PlaceOrderServiceInterface;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Cache;
 use Symfony\Component\HttpFoundation\Response;
 
 class OrderController extends Controller
@@ -37,6 +38,8 @@ class OrderController extends Controller
     {
         $order = $this->placeOrderService->placeOrder($request->input('products'));
 
+//        $key = Cache::put('test', 'Redis is working!', 600);
+        dd(Cache::get('test'));
         return (new OrderResource($order))
             ->response()
             ->setStatusCode(Response::HTTP_CREATED);

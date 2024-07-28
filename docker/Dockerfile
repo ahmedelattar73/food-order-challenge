@@ -41,3 +41,6 @@ RUN mkdir -p /home/$user/.composer && \
 
 
 USER $user
+
+# Run the entrypoint file.
+ENTRYPOINT [ "docker/entrypoint.sh" ]
